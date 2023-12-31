@@ -6,6 +6,7 @@ import com.shifen.usercenter.model.domain.User;
 import com.shifen.usercenter.model.domain.request.UserLoginRequest;
 import com.shifen.usercenter.model.domain.request.UserRegisterRequest;
 import com.shifen.usercenter.service.UserService;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -74,6 +75,10 @@ public class UserController {
 
         }
         List<User> users = userService.list(queryWrapper);
+
+        if (ObjectUtils.isNotEmpty(users)) {
+            return new ArrayList<>();
+        }
         users.stream().map(user -> {
             //用户信息脱敏
             return userService.getSafetyUser(user);
@@ -100,7 +105,7 @@ public class UserController {
      * 判断是否是管理员
      *
      * @param request
-     * @return
+     * @return true:是管理员，false：不是管理员
      */
     private boolean isAdmin(HttpServletRequest request) {
         // 仅管理员可以删除用户
