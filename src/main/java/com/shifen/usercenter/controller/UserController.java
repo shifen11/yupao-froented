@@ -61,6 +61,29 @@ public class UserController {
         return userService.userLogin(userAccount, userPassword, request);
     }
 
+    @GetMapping("/current")
+    public User getCurrent(HttpServletRequest request) {
+        Object userObj = request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
+        User currentUser = (User) userObj;
+        if (currentUser == null) {
+            return null;
+        }
+        // todo 校验用户是否合法
+        Long userId = currentUser.getId();
+        User user = userService.getById(userId);
+
+        return userService.getSafetyUser(user);
+    }
+
+    @PostMapping("/logout")
+    public Integer userLogout(HttpServletRequest request) {
+        if (request == null) {
+            return null;
+        }
+        // 退出登录
+        return userService.userLogout(request);
+    }
+
     @GetMapping("/search")
     public List<User> searchUsers(String userName, HttpServletRequest request) {
         // 仅管理员可以查看所有用户
@@ -109,8 +132,10 @@ public class UserController {
      */
     private boolean isAdmin(HttpServletRequest request) {
         // 仅管理员可以删除用户
-        Object userObj = request.getSession().getAttribute(UserConstant.USER_SESSION);
+        Object userObj = request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
         User user = (User) userObj;
         return user != null && user.getUserRole() == UserConstant.ADMIN_ROLE;
     }
+
+
 }

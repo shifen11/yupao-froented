@@ -14,7 +14,7 @@ public interface UserConstant {
     /**
      * 用户登录态键
      */
-    String USER_SESSION = "userSession";
+    String USER_LOGIN_STATE = "userSession";
 
     // ---------权限---------
 
