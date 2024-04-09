@@ -121,7 +121,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         // 用户不存在
         if (user == null) {
             log.info("user login failed, userAccount cannot match userPassword");
+            //抛出异常，显示用户不存在
             return null;
+
         }
 
         User safetyUser = getSafetyUser(user);

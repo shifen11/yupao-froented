@@ -1,6 +1,5 @@
 package com.shifen.usercenter.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.shifen.usercenter.constant.UserConstant;
 import com.shifen.usercenter.model.domain.User;
 import com.shifen.usercenter.model.domain.request.UserLoginRequest;
@@ -92,12 +91,9 @@ public class UserController {
         }
 
         // 模糊查询
-        QueryWrapper queryWrapper = new QueryWrapper();
-        if (StringUtils.isNotBlank(userName)) {
-            queryWrapper.like("username", userName);
 
-        }
-        List<User> users = userService.list(queryWrapper);
+        List<User> users = userService.lambdaQuery()
+                .like(StringUtils.isNotBlank(userName), User::getUsername, userName).list();
 
         if (ObjectUtils.isNotEmpty(users)) {
             return new ArrayList<>();
