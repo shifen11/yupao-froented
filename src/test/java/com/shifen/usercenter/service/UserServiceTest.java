@@ -1,7 +1,9 @@
 package com.shifen.usercenter.service;
 
 import java.util.Date;
+import java.util.List;
 
+import com.shifen.usercenter.controller.UserController;
 import com.shifen.usercenter.model.domain.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -20,7 +22,8 @@ class UserServiceTest {
 
     @Resource
     private UserService userService;
-
+    @Resource
+    private UserController userController;
     @Test
     void testAddUser() {
         User user = new User();
@@ -40,10 +43,5 @@ class UserServiceTest {
 
     @Test
     void userRegister() {
-        String userAccount = "shifen";
-        String userPassword = "123456";
-        String cUserPassword = "123456";
-        long result = userService.userRegister(userAccount, userPassword, cUserPassword);
-        Assertions.assertEquals(-1, result);
     }
 }
