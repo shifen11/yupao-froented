@@ -5,7 +5,9 @@ import java.util.Date;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.shifen.usercenter.common.ErrorCode;
 import com.shifen.usercenter.constant.UserConstant;
+import com.shifen.usercenter.exception.BusinessException;
 import com.shifen.usercenter.model.domain.User;
 import com.shifen.usercenter.service.UserService;
 import com.shifen.usercenter.mapper.UserMapper;
@@ -35,19 +37,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
 
     @Override
-    public long userRegister(String userAccount, String userPassword, String checkPassword) {
+    public long userRegister(String userAccount, String userPassword, String checkPassword, String planetCode) {
         // 1. 校验
-        if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword)) {
-            //Todo 修改为自定义异常
-            return -1;
+        if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword, planetCode)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"参数为空");
         }
         if (userAccount.length() < 4) {
-            return -1;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"账号长度不足4位");
         }
-        if (userPassword.length() > 8 || checkPassword.length() > 8) {
-            return -1;
+        if (userPassword.length() < 8 || checkPassword.length() < 8) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"密码长度不足8位");
         }
-
+        if (planetCode.length() > 5) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"星球编号长度超过5位");
+        }
         // 账号不能包含特殊字符
         String validPattern = "^[a-zA-Z0-9`~!@#$%^&*()-_=+[{]}\\\\|;:'\",<.>/?]+$";
         Matcher matcher = Pattern.compile(validPattern).matcher(userAccount);
@@ -67,7 +70,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         if (count > 0) {
             return -1;
         }
-
+        // 星球编号不能重复
+        queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("planetCode", userAccount);
+        count = this.count(queryWrapper);
+        if (count > 0) {
+            return -1;
+        }
 
         // 2. 加密
 
@@ -77,7 +86,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         User user = new User();
         user.setUserAccount(userAccount);
         user.setUserPassword(encryptPassword);
-
+        user.setPlanetCode(planetCode);
         boolean saveResult = this.save(user);
         if (!saveResult) {
             return -1;
@@ -152,6 +161,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         safetyUser.setUserStatus(user.getUserStatus());
         safetyUser.setCreateTime(user.getCreateTime());
         safetyUser.setUserRole(user.getUserRole());
+        safetyUser.setPlanetCode(user.getPlanetCode());
         return safetyUser;
     }
 
@@ -161,7 +171,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         return 1;
     }
 }
-
 
 
 
