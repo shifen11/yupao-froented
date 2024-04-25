@@ -76,7 +76,7 @@ public class UserController {
     }
 
     @GetMapping("/current")
-    public User getCurrent(HttpServletRequest request) {
+    public BaseResponse<User> getCurrent(HttpServletRequest request) {
         Object userObj = request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
         User currentUser = (User) userObj;
         if (currentUser == null) {
@@ -86,7 +86,8 @@ public class UserController {
         Long userId = currentUser.getId();
         User user = userService.getById(userId);
 
-        return userService.getSafetyUser(user);
+        User result = userService.getSafetyUser(user);
+        return ResultUtils.success(result);
     }
 
     @PostMapping("/logout")
