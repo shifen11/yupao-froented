@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: user-center
+  #数据库配置
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/shifen
+    username: root
+    password: 123456
